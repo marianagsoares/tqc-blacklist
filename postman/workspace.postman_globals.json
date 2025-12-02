@@ -1,0 +1,21 @@
+{
+	"id": "72046309-60e3-4bca-8cbf-4c71eedd01ac",
+	"values": [
+		{
+			"key": "tokenAdmin",
+			"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2OGY5NWRmMGUzMmI2NzdkYTg5N2I3YzUiLCJ1c2VySWQiOiI2OGY5NWRmMGUzMmI2NzdkYTg5N2I3YzUiLCJuYW1lIjoiTMO6Y2lvIFDDoXJpcyIsIm1haWwiOiJtYXJpYW5hc29hcmVzMkBnbWFpbC5jb20iLCJhY2Nlc3NQcm9maWxlIjoiQURNSU4iLCJpYXQiOjE3NjExNzQ1MDIsImV4cCI6MTc2MTI2MDkwMn0.ksjIYsh18O5XCN7JqrfbaQJBJO6qypyBpWmIYncw6wk",
+			"type": "any",
+			"enabled": true
+		},
+		{
+			"key": "baseUrl",
+			"value": "https://api-blacklist.qacoders.dev.br/api",
+			"type": "default",
+			"enabled": true
+		}
+	],
+	"name": "Globals",
+	"_postman_variable_scope": "globals",
+	"_postman_exported_at": "2025-10-22T23:10:41.844Z",
+	"_postman_exported_using": "Postman/11.68.2"
+}

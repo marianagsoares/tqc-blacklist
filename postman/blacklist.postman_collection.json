@@ -1,0 +1,506 @@
+{
+	"info": {
+		"_postman_id": "4bb5aba6-5447-4c2f-b45d-b1d609ebe25c",
+		"name": "blacklist",
+		"schema": "https://schema.getpostman.com/json/collection/v2.0.0/collection.json",
+		"_exporter_id": "31016043",
+		"_collection_link": "https://testes-de-api.postman.co/workspace/Blacklist~fd474c64-c574-4da8-8ada-a37acc191b5a/collection/31016043-4bb5aba6-5447-4c2f-b45d-b1d609ebe25c?action=share&source=collection_link&creator=31016043"
+	},
+	"item": [
+		{
+			"name": "Auth",
+			"item": [
+				{
+					"name": "user_login",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const responseJson = pm.response.json();\r",
+									"\r",
+									"pm.globals.set(\"tokenAdmin\", responseJson.token); \r",
+									"const userFullName = responseJson.user.fullName;\r",
+									"\r",
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"}); \r",
+									"\r",
+									"\r",
+									"pm.test(\"Should return success message when user is authenticated successfully\", () => {\r",
+									"    pm.expect(responseJson.msg).to.equal(`Olá ${userFullName}, autenticação autorizada com sucesso!`);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Should return property and type valid\", () => {\r",
+									"    pm.expect(responseJson).to.have.property(\"user\");\r",
+									"    pm.expect(responseJson.user).to.be.a(\"object\");\r",
+									"\r",
+									"    pm.expect(responseJson).to.have.property(\"msg\");\r",
+									"    pm.expect(responseJson.msg).to.be.a(\"string\");\r",
+									"\r",
+									"    pm.expect(responseJson).to.have.property(\"token\");\r",
+									"    pm.expect(responseJson.token).to.be.a(\"string\");\r",
+									"\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"mail\": \"{{loggedUser}}\",\r\n  \"password\": \"{{loggedUserPassword}}\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "{{baseUrl}}/login"
+					},
+					"response": []
+				},
+				{
+					"name": "validate_user_token",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"}); "
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": "{{baseUrl}}/validateToken"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Client",
+			"item": [
+				{
+					"name": "create_client",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"pm.sendRequest(\"https://randomuser.me/api/?locale=pt_BR\", function (err, res) {\r",
+									"    if (err) return console.error(err);\r",
+									"\r",
+									"    const user = res.json().results[0];\r",
+									"\r",
+									"    pm.environment.set(\"clientFirstName\", user.name.first);\r",
+									"    pm.environment.set(\"clientLastName\", user.name.last);\r",
+									"    pm.environment.set(\"clientFullName\", `${user.name.first} ${user.name.last}`);\r",
+									"    pm.environment.set(\"clientMail\", `${user.name.first}${user.name.last}@qacoders.com`);\r",
+									"});\r",
+									"\r",
+									"function randomCpf() {\r",
+									"    let randomCpf = \"\";\r",
+									"    for (let i = 0; i < 11; i++) {\r",
+									"        randomCpf += Math.floor(Math.random() * 10).toString();\r",
+									"    }\r",
+									"    return randomCpf;\r",
+									"}\r",
+									"\r",
+									"function randomRg() {\r",
+									"    let randomRg = \"\";\r",
+									"    for (let i = 0; i < 7; i++) {\r",
+									"        randomRg += Math.floor(Math.random() * 10).toString();\r",
+									"    }\r",
+									"    return randomRg;\r",
+									"}\r",
+									"\r",
+									"function randomPhone() {\r",
+									"    let randomPhone = \"\";\r",
+									"    for (let i = 0; i < 11; i++) {\r",
+									"        randomPhone += Math.floor(Math.random() * 10).toString();\r",
+									"    }\r",
+									"    return randomPhone;\r",
+									"}\r",
+									"\r",
+									"\r",
+									"function generateRandomBirthDate() {\r",
+									"    const randomYear = Math.floor(Math.random() * 100) + 1920;\r",
+									"    const randomMonth = Math.floor(Math.random() * 12) + 1;\r",
+									"    const randomDay = Math.floor(Math.random() * 28) + 1;\r",
+									"\r",
+									"    const year = randomYear.toString();\r",
+									"    const month = randomMonth.toString().padStart(2, '0');\r",
+									"    const day = randomDay.toString().padStart(2, '0');\r",
+									"\r",
+									"    const birthDate = year + month + day;\r",
+									"\r",
+									"    return birthDate;\r",
+									"}\r",
+									"\r",
+									"//guardar cpf gerado\r",
+									"pm.environment.set(\"clientCpf\", randomCpf());\r",
+									"\r",
+									"//guardar rg gerado\r",
+									"pm.environment.set(\"clientRg\", randomRg());\r",
+									"\r",
+									"//guardar phone gerado\r",
+									"pm.environment.set(\"clientPhone\", randomPhone());\r",
+									"\r",
+									"//guardar data de aniversario gerada\r",
+									"pm.environment.set(\"birthDate\", generateRandomBirthDate());\r",
+									"\r",
+									"//guardar cargo atual ADMIN\r",
+									"pm.environment.set(\"clientCurrentRole\", \"ADMIN\");"
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const responseJson = pm.response.json();\r",
+									"\r",
+									"pm.test(\"Status code is 201\", function () {\r",
+									"    pm.response.to.have.status(201);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Should return success message when user is created successfully\", () => {\r",
+									"    pm.expect(responseJson).to.have.property(\"msg\");\r",
+									"    pm.expect(responseJson.msg).to.equal(\"Cliente criado com sucesso.\");\r",
+									"});\r",
+									"\r",
+									"pm.environment.set(\"clientId\", responseJson.newClient._id);\r",
+									"pm.environment.set(\"clientFullName\", responseJson.newClient.fullName);"
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"fullName\": \"{{clientFullName}}\",\r\n  \"birthDate\": \"{{birthDate}}\",\r\n  \"mail\": \"{{clientMail}}\",\r\n  \"phone\": \"{{clientPhone}}\",\r\n  \"currentRole\": \"{{clientCurrentRole}}\",\r\n  \"documents\": [\r\n    {\r\n      \"rg\": \"{{clientRg}}\",\r\n      \"cpf\": \"{{clientCpf}}\"\r\n    }\r\n  ],\r\n  \"address\": [\r\n    {\r\n      \"zipCode\": \"{{zipCode}}\",\r\n      \"city\": \"{{city}}\",\r\n      \"state\": \"{{state}}\",\r\n      \"district\": \"{{district}}\",\r\n      \"street\": \"{{street}}\",\r\n      \"number\": \"{{number}}\",\r\n      \"complement\": \"{{complement}}\",\r\n      \"country\": \"{{country}}\"\r\n    }\r\n  ]\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "{{baseUrl}}/client"
+					},
+					"response": []
+				},
+				{
+					"name": "get_all_clients",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const responseJson = pm.response.json();\r",
+									"\r",
+									"pm.test(\"Status code should be 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Should return correct property and type\", () => {\r",
+									"    pm.expect(responseJson).to.have.property(\"clients\");\r",
+									"    pm.expect(responseJson.clients).to.be.an(\"array\");\r",
+									"});\r",
+									"\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": "{{baseUrl}}/client"
+					},
+					"response": []
+				},
+				{
+					"name": "count_all_clients",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const responseJson = pm.response.json();\r",
+									"\r",
+									"pm.test(\"Status code should be 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Should return correct property and type\", () => {\r",
+									"    pm.expect(responseJson).to.have.property(\"count\");\r",
+									"    pm.expect(responseJson.count).to.be.an(\"number\");\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": "{{baseUrl}}/client/count"
+					},
+					"response": []
+				},
+				{
+					"name": "get_client_by_id",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const responseJson = pm.response.json();\r",
+									"\r",
+									"pm.test(\"Status code should be 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Should return correct property and type\", () => {\r",
+									"    pm.expect(responseJson).to.have.property(\"client\");\r",
+									"    pm.expect(responseJson).to.be.an(\"object\");\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Should return a correct id\", () => {\r",
+									"    pm.expect(responseJson.client).to.have.property(\"_id\");\r",
+									"    pm.expect(responseJson.client._id).to.be.a(\"string\");\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Client shouldn't have property 'password'\", function () {\r",
+									"    pm.expect(responseJson.client).to.not.have.property(\"password\");\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": "{{baseUrl}}/client/{{clientId}}"
+					},
+					"response": []
+				},
+				{
+					"name": "update_client",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const responseJson = pm.response.json();\r",
+									"const clientId = responseJson._id;\r",
+									"\r",
+									"const url = pm.request.url.toString();\r",
+									"const urlId = url.split(\"/\").pop();\r",
+									"\r",
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Should return correct properties and types\", () => {\r",
+									"    pm.expect(responseJson).to.have.property(\"_id\");\r",
+									"    pm.expect(responseJson).to.have.property(\"fullName\");\r",
+									"    pm.expect(responseJson).to.have.property(\"birthDate\");\r",
+									"    pm.expect(responseJson).to.have.property(\"mail\");\r",
+									"    pm.expect(responseJson).to.have.property(\"phone\");\r",
+									"    pm.expect(responseJson).to.have.property(\"currentRole\");\r",
+									"    pm.expect(responseJson).to.have.property(\"documents\");\r",
+									"    pm.expect(responseJson).to.have.property(\"address\");\r",
+									"    pm.expect(responseJson).to.have.property(\"audit\");\r",
+									"});\r",
+									"\r",
+									"pm.test(\"The ID in the URL should be equal to the ID returned in the client\", function () {\r",
+									"    pm.expect(clientId).to.eql(urlId);\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"fullName\": \"{{clientFullName}}\",\r\n  \"birthDate\": \"{{birthDate}}\",\r\n  \"mail\": \"{{clientMail}}\",\r\n  \"phone\": \"{{clientPhone}}\",\r\n  \"currentRole\": \"{{clientCurrentRole}}\",\r\n  \"documents\": [\r\n    {\r\n      \"rg\": \"{{clientRg}}\",\r\n      \"cpf\": \"{{clientCpf}}\"\r\n    }\r\n  ],\r\n  \"address\": [\r\n    {\r\n      \"zipCode\": \"{{zipCode}}\",\r\n      \"city\": \"{{city}}\",\r\n      \"state\": \"{{state}}\",\r\n      \"district\": \"{{district}}\",\r\n      \"street\": \"{{street}}\",\r\n      \"number\": \"{{number}}\",\r\n      \"complement\": \"{{complement}}\",\r\n      \"country\": \"{{country}}\"\r\n    }\r\n  ]\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "{{baseUrl}}/client/{{clientId}}"
+					},
+					"response": []
+				},
+				{
+					"name": "delete_client",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const resposeJson = pm.response.json();\r",
+									"const clientFullName = pm.environment.get(\"clientFullName\");\r",
+									"\r",
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Should return success message when user is created successfully\", () => {\r",
+									"    pm.expect(resposeJson.msg).to.equal(`O cliente ${clientFullName} foi deletado com sucesso!.`);\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": "{{baseUrl}}/client/{{clientId}}"
+					},
+					"response": []
+				}
+			]
+		}
+	],
+	"auth": {
+		"type": "apikey",
+		"apikey": {
+			"key": "Authorization",
+			"value": "{{tokenAdmin}}"
+		}
+	},
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"requests": {},
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"requests": {},
+				"exec": [
+					""
+				]
+			}
+		}
+	]
+}
