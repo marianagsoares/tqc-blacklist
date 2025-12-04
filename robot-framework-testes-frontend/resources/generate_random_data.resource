@@ -87,3 +87,9 @@ Gerar Departamento Da Lista
     ${dept}=    FakerLibrary.Random Element    ${departamentos}
     Log    ${dept}
     RETURN    ${dept}
+
+Gerar Nome Centro de Custo
+    ${word1}=    FakerLibrary.Word
+    ${word2}=    FakerLibrary.Word
+    ${costCenterName}=    Catenate    ${word1}    ${word2}
+    RETURN    ${costCenterName}

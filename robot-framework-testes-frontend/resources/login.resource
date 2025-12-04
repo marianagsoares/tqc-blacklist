@@ -4,6 +4,8 @@ Resource    ../config/dev.robot
 
 *** Keywords ***
 Realizar Login
+    Go To    ${BASE_URL_UI}/login
+
     Wait Until Element Is Visible    id:email    timeout=10s
     Input Text    id:email    ${FRONTEND_EMAIL}
 
